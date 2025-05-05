@@ -18,38 +18,40 @@
   <!-- AI Reply Script -->
   <script>
     Tawk_API = Tawk_API || {};
-    Tawk_API.onChatMessageVisitor = function (message) {
-      const text = message.text || "";
-      const lowerText = text.toLowerCase();
-
-      // เช็คว่ามีคำที่เกี่ยวข้องกับหมอหรือเวร
-      if (lowerText.includes("หมอ") || lowerText.includes("แพทย์") || lowerText.includes("เวร") || lowerText.includes("ตรวจ")) {
-        fetch("https://script.google.com/macros/s/AKfycby4DtgL_j0VjvAAzlNt_8in5irfKytdQ7VUEjISGZpbpPEwAilW8Fg4X1QFOzs-TRHF/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: text })
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.answer) {
-              Tawk_API.addEvent('auto_reply', {
-                message: data.answer,
-                visibility: "visitor"
-              });
-            } else {
-              Tawk_API.addEvent('no_data', {
-                message: "ขออภัย ไม่พบข้อมูลในระบบครับ",
-                visibility: "visitor"
-              });
+    Tawk_API.onLoad = function () {
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          mutation.addedNodes.forEach(function (node) {
+            if (node.nodeType === 1 && node.classList.contains("tawk-message") && node.classList.contains("tawk-message-visitor")) {
+              const textEl = node.querySelector(".tawk-message-text");
+              if (textEl) {
+                const text = textEl.innerText.toLowerCase();
+                if (text.includes("หมอ") || text.includes("แพทย์") || text.includes("เวร") || text.includes("ตรวจ")) {
+                  fetch("https://script.google.com/macros/s/AKfycby4DtgL_j0VjvAAzlNt_8in5irfKytdQ7VUEjISGZpbpPEwAilW8Fg4X1QFOzs-TRHF/exec", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: text })
+                  })
+                    .then(res => res.json())
+                    .then(data => {
+                      if (data.answer) {
+                        Tawk_API.sendMessage(data.answer);
+                      } else {
+                        Tawk_API.sendMessage("ขออภัย ไม่พบข้อมูลในระบบครับ");
+                      }
+                    })
+                    .catch(err => {
+                      Tawk_API.sendMessage("เกิดข้อผิดพลาดในการเชื่อมต่อกับระบบข้อมูล");
+                    });
+                }
+              }
             }
-          })
-          .catch(err => {
-            Tawk_API.addEvent('error', {
-              message: "เกิดข้อผิดพลาดในการเชื่อมต่อกับระบบข้อมูล",
-              visibility: "visitor"
-            });
           });
-      }
+        });
+      });
+
+      const chatContainer = document.querySelector("body");
+      observer.observe(chatContainer, { childList: true, subtree: true });
     };
   </script>
 </body>
