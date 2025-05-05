@@ -1,36 +1,55 @@
 <body>
-    <h1>ยินดีต้อนรับสู่เว็บไซต์ของเรา</h1>
-    <p>หากมีคำถามสามารถพูดคุยกับเราผ่านระบบแชทที่มุมขวาล่าง</p>
+  <h1>ยินดีต้อนรับสู่เว็บไซต์ของเรา</h1>
+  <p>หากมีคำถามสามารถพูดคุยกับเราผ่านระบบแชทที่มุมขวาล่าง</p>
 
-    <!-- Tawk.to script -->
-    <script type="text/javascript">
+  <!-- Tawk.to script -->
+  <script type="text/javascript">
     var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-    (function(){
-        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/68182cc5138f991917bc6a58/1iqf6tpdd';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s0.parentNode.insertBefore(s1, s0);
+    (function () {
+      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/68182cc5138f991917bc6a58/1iqf6tpdd';
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
     })();
-    </script>
+  </script>
 
-    <!-- AI Reply Script -->
-    <script>
+  <!-- AI Reply Script -->
+  <script>
     Tawk_API = Tawk_API || {};
-    Tawk_API.onChatMessage = function(message){
-        const text = message.message;
-        if (text.includes("หมอ") || text.includes("แพทย์") || text.includes("ตรวจ")) {
-            fetch("https://script.google.com/macros/s/AKfycbyjegeD3bcl6-PntnyJ9cwpwo_BQHnPkK00fobqOME/exec")
-            .then(res => res.json())
-            .then(data => {
-                const reply = `แพทย์เวรวันนี้:\n👨‍⚕️ เช้า: ${data.morning}\n🌆 เย็น: ${data.evening}\n🌙 กลางคืน: ${data.night}`;
-                Tawk_API.addEvent('auto-reply', { text: reply });
-            })
-            .catch(err => {
-                Tawk_API.addEvent('auto-reply-error', { text: 'ขออภัย ระบบไม่สามารถดึงข้อมูลได้ในขณะนี้' });
+    Tawk_API.onChatMessageVisitor = function (message) {
+      const text = message.text || "";
+      const lowerText = text.toLowerCase();
+
+      // เช็คว่ามีคำที่เกี่ยวข้องกับหมอหรือเวร
+      if (lowerText.includes("หมอ") || lowerText.includes("แพทย์") || lowerText.includes("เวร") || lowerText.includes("ตรวจ")) {
+        fetch("https://script.google.com/macros/s/AKfycby4DtgL_j0VjvAAzlNt_8in5irfKytdQ7VUEjISGZpbpPEwAilW8Fg4X1QFOzs-TRHF/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.answer) {
+              Tawk_API.addEvent('auto_reply', {
+                message: data.answer,
+                visibility: "visitor"
+              });
+            } else {
+              Tawk_API.addEvent('no_data', {
+                message: "ขออภัย ไม่พบข้อมูลในระบบครับ",
+                visibility: "visitor"
+              });
+            }
+          })
+          .catch(err => {
+            Tawk_API.addEvent('error', {
+              message: "เกิดข้อผิดพลาดในการเชื่อมต่อกับระบบข้อมูล",
+              visibility: "visitor"
             });
-        }
+          });
+      }
     };
-    </script>
+  </script>
 </body>
