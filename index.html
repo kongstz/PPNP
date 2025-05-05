@@ -31,7 +31,7 @@
       console.log("ผู้ใช้ถาม:", question);
 
       // ส่งคำถามไปยัง Apps Script
-      fetch("https://script.google.com/macros/s/XXXXXXXXXXXX/exec", {  // ใส่ URL ที่ได้จาก Deploy
+      fetch("https://script.google.com/macros/s/AKfycbyDwKYe6EmA5ZvQm8Yc7P56JoNjT6v2Jhj05mmDF9OeNjz-Nt_putc8f80c499rb45k/exec", {  // ใส่ URL ที่ได้จาก Deploy
         method: "POST",
         body: JSON.stringify({ question: question }),
         headers: { "Content-Type": "application/json" }
