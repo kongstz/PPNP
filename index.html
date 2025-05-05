@@ -1,29 +1,53 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>เว็บไซต์ของฉัน</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>AI ตอบคำถามแพทย์เข้าเวร</title>
 </head>
 <body>
+  <h1>เว็บไซต์ตรวจสอบแพทย์เข้าเวร</h1>
+  <p>กรุณาถามเช่น "นพ.ศุภฤกษ์ เข้าเวรวันไหนบ้าง"</p>
 
-    <h1>ยินดีต้อนรับสู่เว็บไซต์ของเรา</h1>
-    <p>หากมีคำถามสามารถพูดคุยกับเราผ่านระบบแชทที่มุมขวาล่าง</p>
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/681461f8be6663190a6c6ab8/1iqeva3tl';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
+  <!-- Tawk.to Script -->
+  <script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
 
+    (function() {
+      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/681461f8be6663190a6c6ab8/1iq7ri5gc'; // ใช้ของคุณเอง
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    })();
 
+    // รอจน Tawk.to โหลดเสร็จ
+    Tawk_API.onChatStarted = function() {
+      console.log("แชทเริ่มแล้ว");
+    };
 
+    Tawk_API.onMessageVisitor = function(message) {
+      const question = message.text;
+      console.log("ผู้ใช้ถาม:", question);
 
-
+      // ส่งคำถามไปยัง Apps Script
+      fetch("https://script.google.com/macros/s/XXXXXXXXXXXX/exec", {  // ใส่ URL ที่ได้จาก Deploy
+        method: "POST",
+        body: JSON.stringify({ question: question }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const answer = data.answer;
+        // ส่งคำตอบกลับไปในแชท
+        Tawk_API.addEvent("ตอบจากระบบ AI", { answer: answer });
+        Tawk_API.sendMessage(answer);
+      })
+      .catch(err => {
+        Tawk_API.sendMessage("ขออภัย ระบบขัดข้องชั่วคราว");
+        console.error(err);
+      });
+    };
+  </script>
 </body>
 </html>
