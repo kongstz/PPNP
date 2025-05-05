@@ -21,7 +21,7 @@
     Tawk_API.onChatMessage = function(message){
         const text = message.message;
         if (text.includes("หมอ") || text.includes("แพทย์") || text.includes("ตรวจ")) {
-            fetch("https://script.google.com/macros/s/AKfycbyDwKYe6EmA5ZvQm8Yc7P56JoNjT6v2Jhj05mmDF9OeNjz-Nt_putc8f80c499rb45k/exec")
+            fetch("https://script.google.com/macros/s/AKfycbyjegeD3bcl6-PntnyJ9cwpwo_BQHnPkK00fobqOME/exec")
             .then(res => res.json())
             .then(data => {
                 const reply = `แพทย์เวรวันนี้:\n👨‍⚕️ เช้า: ${data.morning}\n🌆 เย็น: ${data.evening}\n🌙 กลางคืน: ${data.night}`;
