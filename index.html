@@ -1,27 +1,36 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <title>เว็บไซต์ของฉัน</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
 <body>
-
     <h1>ยินดีต้อนรับสู่เว็บไซต์ของเรา</h1>
     <p>หากมีคำถามสามารถพูดคุยกับเราผ่านระบบแชทที่มุมขวาล่าง</p>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+
+    <!-- Tawk.to script -->
+    <script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
     (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/68182cc5138f991917bc6a58/1iqf6tpdd';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/68182cc5138f991917bc6a58/1iqf6tpdd';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
     })();
     </script>
-    <!--End of Tawk.to Script-->
 
+    <!-- AI Reply Script -->
+    <script>
+    Tawk_API = Tawk_API || {};
+    Tawk_API.onChatMessage = function(message){
+        const text = message.message;
+        if (text.includes("หมอ") || text.includes("แพทย์") || text.includes("ตรวจ")) {
+            fetch("https://script.google.com/macros/s/AKfycbyDwKYe6EmA5ZvQm8Yc7P56JoNjT6v2Jhj05mmDF9OeNjz-Nt_putc8f80c499rb45k/exec")
+            .then(res => res.json())
+            .then(data => {
+                const reply = `แพทย์เวรวันนี้:\n👨‍⚕️ เช้า: ${data.morning}\n🌆 เย็น: ${data.evening}\n🌙 กลางคืน: ${data.night}`;
+                Tawk_API.addEvent('auto-reply', { text: reply });
+            })
+            .catch(err => {
+                Tawk_API.addEvent('auto-reply-error', { text: 'ขออภัย ระบบไม่สามารถดึงข้อมูลได้ในขณะนี้' });
+            });
+        }
+    };
+    </script>
 </body>
-</html>
