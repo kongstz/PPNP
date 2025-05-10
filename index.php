@@ -1,56 +1,25 @@
 <?php
-$apiUrl = "https://script.google.com/macros/s/AKfycby4DtgL_j0VjvAAzlNt_8in5irfKytdQ7VUEjISGZpbpPEwAilW8Fg4X1QFOzs-TRHF/exec"; // เปลี่ยนตรงนี้
+// URL Google Apps Script Web App
+$apiUrl = "https://script.google.com/macros/s/AKfycbwwrOIyt0onOCY7xZnOhUaNqQUAoNSqdLlPY2u234UhELMa05sEVU6YXZmzmzDtmTS8/exec"; // << เปลี่ยนตรงนี้
 
-$response = file_get_contents($apiUrl);
-if ($response === FALSE) {
-    die("ไม่สามารถดึงข้อมูลจาก Google Sheets ได้");
-}
+// รับข้อความจาก Tawk.to (POST JSON)
+$input = file_get_contents("php://input");
+$payload = json_decode($input, true);
 
-$data = json_decode($response, true);
+// ดึงข้อความ
+$message = $payload['message'] ?? '';
+
+// ส่งต่อไปยัง Google Apps Script
+$ch = curl_init($apiUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['message' => $message]));
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+// ตอบกลับกลับไปที่ Tawk.to
+header('Content-Type: application/json');
+echo $response;
 ?>
-
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <title>ตารางเวรแพทย์ ER</title>
-  <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #999;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-  </style>
-</head>
-<body>
-  <h1>ตารางเวรแพทย์ ER</h1>
-
-  <table>
-    <tr>
-      <th>วันที่</th>
-      <th>วัน</th>
-      <th>เช้า</th>
-      <th>เย็น</th>
-      <th>ดึก</th>
-    </tr>
-    <?php
-    foreach ($data as $i => $row) {
-        if ($i == 0) continue; // ข้ามหัวตาราง
-        echo "<tr>";
-        foreach ($row as $cell) {
-            echo "<td>" . htmlspecialchars($cell) . "</td>";
-        }
-        echo "</tr>";
-    }
-    ?>
-  </table>
-</body>
-</html>
